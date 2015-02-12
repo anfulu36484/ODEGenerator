@@ -42,6 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Element.cs" />
+    <Compile Include="GetDependElements\ConverterDependentElemInMatlabFormat.cs" />
+    <Compile Include="GetDependElements\IConverterOfDependentElements.cs" />
+    <Compile Include="GetDependElements\ConverterDependentElemInMathFormat.cs" />
     <Compile Include="ODE.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

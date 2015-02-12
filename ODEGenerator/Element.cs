@@ -9,32 +9,37 @@ namespace ODEGenerator
 {
     class Element
     {
-        private List<Tuple<Element,double>> elements;
+        private List<DependedElements> dependedElementsList;
 
         public readonly string NameOfElement;
 
         public Element(string nameOfElement)
         {
-            elements = new List<Tuple<Element, double>>();
+            dependedElementsList = new List<DependedElements>();
             NameOfElement = nameOfElement;
         }
 
-        public void Add(Element element, double k)
+        public void AddDependedElements(DependedElements dependedElements)
         {
-            elements.Add(new Tuple<Element, double>(element,k));
+            dependedElementsList.Add(dependedElements);
         }
 
-        public StringBuilder GetElements()
+        public StringBuilder GettingDependedElements()
         {
             StringBuilder sb = new StringBuilder();
             try
             {
-                foreach (var element in elements)
+                foreach (var dependedElements in dependedElementsList)
                 {
                     sb.Append("-");
-                    sb.Append(element.Item2);
+                    sb.Append(dependedElements.RateConstant);
                     sb.Append("*");
-                    sb.Append(element.Item1.NameOfElement);
+
+                    for (int i = 0; i < UPPER; i++)
+                    {
+                        
+                    }
+                    
                 }
             }
             catch (Exception ex)
@@ -47,7 +52,7 @@ namespace ODEGenerator
         public StringBuilder FindElement(Element findElement)
         {
             StringBuilder sb = new StringBuilder();
-            var findElements = elements.Where(n => findElement == n.Item1).ToList();
+            var findElements = dependedElementsList.Where(n => findElement == n.Item1).ToList();
             if (findElements.Count() > 0)
             {
                 foreach (var element in findElements)
@@ -60,6 +65,33 @@ namespace ODEGenerator
             }
             return sb;
         }
+    }
+
+    class DependedElements
+    {
+        private List<Element> _elements;
+
+        private double _rateConstant;
+
+        public DependedElements(List<Element> elements, double rateConstant)
+        {
+            _elements = elements;
+            _rateConstant = rateConstant;
+        }
+
+        public List<Element> Elements
+        {
+            get { return _elements; }
+        }
+
+        public double RateConstant
+        {
+            get { return _rateConstant; }
+        }
+
+        
+
+
     }
 
     
