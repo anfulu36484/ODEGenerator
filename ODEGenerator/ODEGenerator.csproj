@@ -41,13 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Element.cs" />
-    <Compile Include="GetDependElements\ConverterDependentElemInMatlabFormat.cs" />
-    <Compile Include="GetDependElements\IConverterOfDependentElements.cs" />
-    <Compile Include="GetDependElements\ConverterDependentElemInMathFormat.cs" />
+    <Compile Include="Reaction.cs" />
+    <Compile Include="Substance.cs" />
+    <Compile Include="ReactionsList.cs" />
     <Compile Include="ODE.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SubstanceComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

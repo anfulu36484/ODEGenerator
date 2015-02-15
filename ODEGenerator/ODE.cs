@@ -8,43 +8,89 @@ namespace ODEGenerator
 {
     class ODE
     {
-        List<Element> elements = new List<Element>();
+        List<Substance> _substances = new List<Substance>();
 
-        public void Add(Element element)
+        ReactionsList _reactions = new ReactionsList();
+
+        #region Добавление новых элементов и их взаимодействий
+
+        SubstanceComparer _substanceComparer = new SubstanceComparer();
+
+        void AddNewElements(Substance[] interactingSubstances, Substance[] theResultingSubstances)
         {
-            elements.Add(element);
+            var newElements = interactingSubstances
+                              .Concat(theResultingSubstances)
+                              .Where(n =>!_substances.Contains(n, _substanceComparer));
+            if(newElements.Count()>0)
+                _substances.AddRange(newElements);
         }
 
-        public void AddRange(IEnumerable<Element> e)
+        /// <summary>
+        /// Добавить новое выражение.
+        /// Пример: А->B
+        /// </summary>
+        /// <param name="interactingSubstances">A - исходный элемент</param>
+        /// <param name="rateConstant">k - контстанта скорости</param>
+        /// <param name="theResultingSubstance">С - элемент, образовавшийся из элемента А</param>
+        public void Add(Substance interactingSubstances, string rateConstant, Substance theResultingSubstance)
         {
-            elements.AddRange(e);
+            _reactions.Add(new Reaction(new []{interactingSubstances}, rateConstant, theResultingSubstance));
+            AddNewElements(new []{interactingSubstances}, new[] { theResultingSubstance });
         }
 
-        public List<StringBuilder> GetResult()
-        {
-            List<StringBuilder> result = new List<StringBuilder>();
 
-            foreach (var element in elements)
+        /// <summary>
+        /// Добавить новое выражение.
+        /// Пример: А+B->C
+        /// </summary>
+        /// <param name="interactingSubstances">A,B - взаимодействующие элементы</param>
+        /// <param name="rateConstant">k - контстанта скорости</param>
+        /// <param name="theResultingSubstance">С - продукт взаимодействия элементов А и В</param>
+        public void Add(Substance[] interactingSubstances, string rateConstant, Substance theResultingSubstance)
+        {
+            _reactions.Add(new Reaction(interactingSubstances,rateConstant,theResultingSubstance));
+            AddNewElements(interactingSubstances, new[] {theResultingSubstance});
+        }
+
+        /// <summary>
+        /// Добавить новое выражение.
+        /// Пример: А+B->C+D
+        /// </summary>
+        /// <param name="interactingSubstances">A,B - взаимодействующие элементы</param>
+        /// <param name="rateConstant">k - контстанта скорости</param>
+        /// <param name="theResultingSubstances">С, D - продукты взаимодействия элементов А и В</param>
+        public void Add(Substance[] interactingSubstances, string rateConstant, Substance[] theResultingSubstances)
+        {
+            foreach (var resultingElement in theResultingSubstances)
             {
-
-                StringBuilder sb = new StringBuilder();
-
-                sb.Append("d" + element.NameOfElement + "/dt = ");
-                sb.Append(element.GetElements());
-                foreach (var element1 in elements)
-                {
-                    StringBuilder sb2 = element1.FindElement(element);
-                    if (sb2 != null)
-                        sb.Append(sb2);
-                }
-                result.Add(sb);
+                _reactions.Add(new Reaction(interactingSubstances,rateConstant,resultingElement));
             }
-            return result;
+            AddNewElements(interactingSubstances, theResultingSubstances);
         }
+
+        #endregion
+
+
+        List<StringBuilder> CreateExpressionsOfExpenditure()
+        {
+            List<StringBuilder> differentialEquations = new List<StringBuilder>();
+            foreach (var substance in _substances)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(string.Format("d{0}/dt = ", substance.NameOfSubstance));
+                sb.Append(_reactions.GetExpressionOfExpenditure(substance));
+                sb.Append(_reactions.GetExpressionOfFormation(substance));
+                differentialEquations.Add(sb);
+            }
+            return differentialEquations;
+        }
+
+
+
 
         public void PrintResult()
         {
-            List<StringBuilder> result = GetResult();
+            List<StringBuilder> result = CreateExpressionsOfExpenditure();
             foreach (var stringBuilder in result)
             {
                 Console.WriteLine(stringBuilder.ToString());
@@ -52,4 +98,5 @@ namespace ODEGenerator
         }
 
     }
+
 }
