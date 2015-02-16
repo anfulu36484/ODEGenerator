@@ -34,7 +34,7 @@ namespace ODEGenerator
         /// <param name="theResultingSubstance">С - элемент, образовавшийся из элемента А</param>
         public void Add(Substance interactingSubstances, string rateConstant, Substance theResultingSubstance)
         {
-            _reactions.Add(new Reaction(new []{interactingSubstances}, rateConstant, theResultingSubstance));
+            _reactions.Add(new []{interactingSubstances}, rateConstant, new []{theResultingSubstance});
             AddNewElements(new []{interactingSubstances}, new[] { theResultingSubstance });
         }
 
@@ -48,7 +48,7 @@ namespace ODEGenerator
         /// <param name="theResultingSubstance">С - продукт взаимодействия элементов А и В</param>
         public void Add(Substance[] interactingSubstances, string rateConstant, Substance theResultingSubstance)
         {
-            _reactions.Add(new Reaction(interactingSubstances,rateConstant,theResultingSubstance));
+            _reactions.Add(interactingSubstances,rateConstant,new []{theResultingSubstance});
             AddNewElements(interactingSubstances, new[] {theResultingSubstance});
         }
 
@@ -61,10 +61,7 @@ namespace ODEGenerator
         /// <param name="theResultingSubstances">С, D - продукты взаимодействия элементов А и В</param>
         public void Add(Substance[] interactingSubstances, string rateConstant, Substance[] theResultingSubstances)
         {
-            foreach (var resultingElement in theResultingSubstances)
-            {
-                _reactions.Add(new Reaction(interactingSubstances,rateConstant,resultingElement));
-            }
+            _reactions.Add(interactingSubstances, rateConstant, theResultingSubstances);
             AddNewElements(interactingSubstances, theResultingSubstances);
         }
 

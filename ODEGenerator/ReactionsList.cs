@@ -7,36 +7,41 @@ using System.Threading.Tasks;
 
 namespace ODEGenerator
 {
-    class ReactionsList :IEnumerable<Reaction>
+    class ReactionsList 
     {
-        List<Reaction> _reactionsList = new List<Reaction>();
+        List<Reaction> _fullReactionsList = new List<Reaction>();
+        List<Reaction> _reactionsListWithoutDuplicates = new List<Reaction>();
 
-        public IEnumerator<Reaction> GetEnumerator()
+        public void Add(Substance[] interactingSubstances, string rateConstant, Substance[] theResultingSubstances)
         {
-            return _reactionsList.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public void Add(Reaction reaction)
-        {
-            _reactionsList.Add(reaction);
+            if (theResultingSubstances.Count() == 1)
+            {
+                Reaction reaction = new Reaction(interactingSubstances,rateConstant,theResultingSubstances[0]);
+                _fullReactionsList.Add(reaction);
+                _reactionsListWithoutDuplicates.Add(reaction);
+            }
+            else
+            {
+                foreach (var resultingElement in theResultingSubstances)
+                {
+                    _fullReactionsList.Add(new Reaction(interactingSubstances, rateConstant, resultingElement));
+                }
+                _reactionsListWithoutDuplicates.Add(new Reaction(interactingSubstances, rateConstant, theResultingSubstances[0]));
+            }
+            
         }
 
         public StringBuilder GetExpressionOfExpenditure(Substance substance)
         {
             StringBuilder sb = new StringBuilder();
-            
 
-            for (int i = 0; i < _reactionsList.Count; i++)
+
+            for (int i = 0; i < _reactionsListWithoutDuplicates.Count; i++)
             {
-                if (_reactionsList[i].IsSubstanceContainsInInteractingSubstances(substance))
+                if (_reactionsListWithoutDuplicates[i].IsSubstanceContainsInInteractingSubstances(substance))
                 {
                     sb.Append("-");
-                    sb.Append(_reactionsList[i].GetExpressionOfExpenditure());
+                    sb.Append(_reactionsListWithoutDuplicates[i].GetExpressionOfExpenditure());
                 }
             }
             return sb;
@@ -46,12 +51,12 @@ namespace ODEGenerator
         {
             StringBuilder sb = new StringBuilder();
             SubstanceComparer substanceComparer = new SubstanceComparer();
-            for (int i = 0; i < _reactionsList.Count; i++)
+            for (int i = 0; i < _fullReactionsList.Count; i++)
             {
-                if (substanceComparer.Equals(substance, _reactionsList[i].TheReactionProduct))
+                if (substanceComparer.Equals(substance, _fullReactionsList[i].TheReactionProduct))
                 {
                     sb.Append("+");
-                    sb.Append(_reactionsList[i].GetExpressionOfExpenditure());
+                    sb.Append(_fullReactionsList[i].GetExpressionOfExpenditure());
                 }
             }
             return sb;

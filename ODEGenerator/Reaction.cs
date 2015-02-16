@@ -39,14 +39,6 @@ namespace ODEGenerator
             get { return _reactionProduct; }
         }
 
-        public override int GetHashCode()
-        {
-            for (int i = 0; i < _interactingSubstances.Count; i++)
-            {
-                
-            }
-            return 
-        }
 
 
         public bool IsSubstanceContainsInInteractingSubstances(Substance substance)
