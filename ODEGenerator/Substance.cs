@@ -12,11 +12,35 @@ namespace ODEGenerator
     {
         public readonly string NameOfSubstance;
 
-        public Substance(string nameOfSubstance)
+        public double InitialValue;
+
+        private GroupOfSubstances _groupOfSubstances;
+
+        public Substance(string nameOfSubstance, double initialValue)
         {
             NameOfSubstance = nameOfSubstance;
+            InitialValue = initialValue;
         }
 
+        public Substance(string nameOfSubstance, double initialValue, GroupOfSubstances groupOfSubstances)
+            : this(nameOfSubstance, initialValue)
+        {
+            GroupOfSubstances = groupOfSubstances;
+        }
+
+        private int odeId = -1;
+
+        public int ODEId
+        {
+            get { return odeId; }
+            set { odeId = value; }
+        }
+
+        public GroupOfSubstances GroupOfSubstances
+        {
+            get { return _groupOfSubstances; }
+            set { _groupOfSubstances = value; }
+        }
     }
     
 }

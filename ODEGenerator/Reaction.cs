@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ODEGenerator.Formatter;
 
 namespace ODEGenerator
 {
@@ -13,14 +14,20 @@ namespace ODEGenerator
 
         private Substance _reactionProduct;
 
-        private string _rateConstant;
+        private Constant _constant;
+
+        private ShellFormatter _shellFormatter;
 
 
-        public Reaction(Substance[] interactingSubstances, string rateConstant, Substance theReactionProduct)
+        public Reaction(Substance[] interactingSubstances, 
+                        Constant constant,
+                        Substance theReactionProduct,
+                        ShellFormatter shellFormatter)
         {
             _interactingSubstances = interactingSubstances.ToList();
-            _rateConstant = rateConstant;
+            _constant = constant;
             _reactionProduct = theReactionProduct;
+            _shellFormatter = shellFormatter;
         }
 
 
@@ -29,9 +36,9 @@ namespace ODEGenerator
             get { return _interactingSubstances; }
         }
 
-        public string RateConstant
+        public Constant Constant
         {
-            get { return _rateConstant; }
+            get { return _constant; }
         }
 
         public Substance TheReactionProduct
@@ -53,17 +60,7 @@ namespace ODEGenerator
         /// <returns></returns>
         public StringBuilder GetExpressionOfExpenditure()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(RateConstant);
-            sb.Append("*");
-            sb.Append(_interactingSubstances[0].NameOfSubstance);
-
-            for (int i = 1; i < _interactingSubstances.Count; i++)
-            {
-                sb.Append("*");
-                sb.Append(_interactingSubstances[i].NameOfSubstance);
-            }
-            return sb;
+            return _shellFormatter.GetExpressionOfExpenditure(this);
         }
 
 

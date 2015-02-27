@@ -41,6 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Formatter\ShellFormatter.cs" />
+    <Compile Include="Formatter\MathFormatter.cs" />
+    <Compile Include="Formatter\MatlabFormatter.cs" />
+    <Compile Include="Formatter\IFormatter.cs" />
+    <Compile Include="MatlabODEGenerator.cs" />
+    <Compile Include="Constant.cs" />
+    <Compile Include="GroupOfSubstances.cs" />
     <Compile Include="Reaction.cs" />
     <Compile Include="Substance.cs" />
     <Compile Include="ReactionsList.cs" />

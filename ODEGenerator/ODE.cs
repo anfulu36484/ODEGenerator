@@ -3,91 +3,159 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ODEGenerator.Formatter;
 
 namespace ODEGenerator
 {
     class ODE
     {
-        List<Substance> _substances = new List<Substance>();
+        private List<Substance> _substances = new List<Substance>();
 
-        ReactionsList _reactions = new ReactionsList();
+        private List<Constant> _rateConstants = new List<Constant>(); 
 
-        #region Добавление новых элементов и их взаимодействий
+        private ReactionsList _reactions;
+
+
+        private ShellFormatter _shellFormatter;
+
+        public ODE()
+        {
+            _shellFormatter = new ShellFormatter(new MathFormatter());
+            _reactions = new ReactionsList(_shellFormatter);
+        }
+
+
+        public void ResetOutputFormat(IFormatter formatter)
+        {
+            _shellFormatter.ResetFormatter(formatter);
+        }
+
+
+        #region Добавление новых реакций
 
         SubstanceComparer _substanceComparer = new SubstanceComparer();
 
-        void AddNewElements(Substance[] interactingSubstances, Substance[] theResultingSubstances)
+        public List<Substance> Substances
         {
-            var newElements = interactingSubstances
-                              .Concat(theResultingSubstances)
-                              .Where(n =>!_substances.Contains(n, _substanceComparer));
-            if(newElements.Count()>0)
-                _substances.AddRange(newElements);
+            get { return _substances; }
         }
 
+        public ReactionsList Reactions
+        {
+            get { return _reactions; }
+        }
+
+        public List<Constant> RateConstants
+        {
+            get { return _rateConstants; }
+        }
+
+
+        private void SetID(Substance substance)
+        {
+            substance.ODEId = Substances.Count + 1;
+
+        }
+
+        void AddNewSubstance(Substance substance)
+        {
+            if (!Substances.Contains(substance, _substanceComparer))
+            {
+                SetID(substance);
+                _substances.Add(substance);
+            }
+        }
+
+        void AddNewSubstances(Substance[] interactingSubstances, Substance[] theResultingSubstances)
+        {
+            foreach (var substance in interactingSubstances.Concat(theResultingSubstances))
+            {
+                AddNewSubstance(substance);
+            }
+        }
+
+
+        void AddNewRateConstant(Constant constant)
+        {
+            if (!_rateConstants.Contains(constant))
+                _rateConstants.Add(constant);
+        }
+
+        
+
         /// <summary>
-        /// Добавить новое выражение.
+        /// Добавить новую реакцию
         /// Пример: А->B
         /// </summary>
         /// <param name="interactingSubstances">A - исходный элемент</param>
-        /// <param name="rateConstant">k - контстанта скорости</param>
+        /// <param name="constant">k - контстанта скорости</param>
         /// <param name="theResultingSubstance">С - элемент, образовавшийся из элемента А</param>
-        public void Add(Substance interactingSubstances, string rateConstant, Substance theResultingSubstance)
+        public void Add(Substance interactingSubstances, Constant constant, Substance theResultingSubstance)
         {
-            _reactions.Add(new []{interactingSubstances}, rateConstant, new []{theResultingSubstance});
-            AddNewElements(new []{interactingSubstances}, new[] { theResultingSubstance });
+            Reactions.Add(new []{interactingSubstances}, constant, new []{theResultingSubstance});
+            AddNewSubstances(new []{interactingSubstances}, new[] { theResultingSubstance });
+            AddNewRateConstant(constant);
         }
 
 
         /// <summary>
-        /// Добавить новое выражение.
+        /// Добавить новую реакцию
         /// Пример: А+B->C
         /// </summary>
         /// <param name="interactingSubstances">A,B - взаимодействующие элементы</param>
-        /// <param name="rateConstant">k - контстанта скорости</param>
+        /// <param name="constant">k - контстанта скорости</param>
         /// <param name="theResultingSubstance">С - продукт взаимодействия элементов А и В</param>
-        public void Add(Substance[] interactingSubstances, string rateConstant, Substance theResultingSubstance)
+        public void Add(Substance[] interactingSubstances, Constant constant, Substance theResultingSubstance)
         {
-            _reactions.Add(interactingSubstances,rateConstant,new []{theResultingSubstance});
-            AddNewElements(interactingSubstances, new[] {theResultingSubstance});
+            Reactions.Add(interactingSubstances,constant,new []{theResultingSubstance});
+            AddNewSubstances(interactingSubstances, new[] {theResultingSubstance});
+            AddNewRateConstant(constant);
         }
 
         /// <summary>
-        /// Добавить новое выражение.
+        /// Добавить новую реакцию
         /// Пример: А+B->C+D
         /// </summary>
         /// <param name="interactingSubstances">A,B - взаимодействующие элементы</param>
-        /// <param name="rateConstant">k - контстанта скорости</param>
+        /// <param name="constant">k - контстанта скорости</param>
         /// <param name="theResultingSubstances">С, D - продукты взаимодействия элементов А и В</param>
-        public void Add(Substance[] interactingSubstances, string rateConstant, Substance[] theResultingSubstances)
+        public void Add(Substance[] interactingSubstances, Constant constant, Substance[] theResultingSubstances)
         {
-            _reactions.Add(interactingSubstances, rateConstant, theResultingSubstances);
-            AddNewElements(interactingSubstances, theResultingSubstances);
+            Reactions.Add(interactingSubstances, constant, theResultingSubstances);
+            AddNewSubstances(interactingSubstances, theResultingSubstances);
+            AddNewRateConstant(constant);
         }
+
+        /// <summary>
+        /// Добавить новую реакцию
+        /// Пример: А->B+C
+        /// </summary>
+        /// <param name="interactingSubstances">A,B - взаимодействующие элементы</param>
+        /// <param name="constant">k - контстанта скорости</param>
+        /// <param name="theResultingSubstances">С, D - продукты взаимодействия элементов А и В</param>
+        public void Add(Substance interactingSubstances, Constant constant, Substance[] theResultingSubstances)
+        {
+            Reactions.Add(new []{interactingSubstances}, constant, theResultingSubstances);
+            AddNewSubstances(new []{interactingSubstances}, theResultingSubstances);
+            AddNewRateConstant(constant);
+        }
+
 
         #endregion
 
 
-        List<StringBuilder> CreateExpressionsOfExpenditure()
+        
+
+
+        public List<StringBuilder> CreateExpressions()
         {
-            List<StringBuilder> differentialEquations = new List<StringBuilder>();
-            foreach (var substance in _substances)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.Append(string.Format("d{0}/dt = ", substance.NameOfSubstance));
-                sb.Append(_reactions.GetExpressionOfExpenditure(substance));
-                sb.Append(_reactions.GetExpressionOfFormation(substance));
-                differentialEquations.Add(sb);
-            }
-            return differentialEquations;
+            return _shellFormatter.CreateExpressions(this);
         }
-
-
 
 
         public void PrintResult()
         {
-            List<StringBuilder> result = CreateExpressionsOfExpenditure();
+            List<StringBuilder> result = CreateExpressions();
             foreach (var stringBuilder in result)
             {
                 Console.WriteLine(stringBuilder.ToString());

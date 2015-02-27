@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ODEGenerator.Formatter;
 
 namespace ODEGenerator
 {
@@ -11,12 +12,19 @@ namespace ODEGenerator
     {
         List<Reaction> _fullReactionsList = new List<Reaction>();
         List<Reaction> _reactionsListWithoutDuplicates = new List<Reaction>();
+        private ShellFormatter _shellFormatter;
 
-        public void Add(Substance[] interactingSubstances, string rateConstant, Substance[] theResultingSubstances)
+        public ReactionsList(ShellFormatter shellFormatter)
+        {
+            _shellFormatter = shellFormatter;
+        }
+
+
+        public void Add(Substance[] interactingSubstances, Constant constant, Substance[] theResultingSubstances)
         {
             if (theResultingSubstances.Count() == 1)
             {
-                Reaction reaction = new Reaction(interactingSubstances,rateConstant,theResultingSubstances[0]);
+                Reaction reaction = new Reaction(interactingSubstances,constant,theResultingSubstances[0],_shellFormatter);
                 _fullReactionsList.Add(reaction);
                 _reactionsListWithoutDuplicates.Add(reaction);
             }
@@ -24,9 +32,9 @@ namespace ODEGenerator
             {
                 foreach (var resultingElement in theResultingSubstances)
                 {
-                    _fullReactionsList.Add(new Reaction(interactingSubstances, rateConstant, resultingElement));
+                    _fullReactionsList.Add(new Reaction(interactingSubstances, constant, resultingElement, _shellFormatter));
                 }
-                _reactionsListWithoutDuplicates.Add(new Reaction(interactingSubstances, rateConstant, theResultingSubstances[0]));
+                _reactionsListWithoutDuplicates.Add(new Reaction(interactingSubstances, constant, theResultingSubstances[0],_shellFormatter));
             }
             
         }
