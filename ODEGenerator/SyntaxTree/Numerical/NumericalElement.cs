@@ -18,10 +18,7 @@ namespace ODEGenerator.SyntaxTree.Numerical
             set { _value = value; }
         }
 
-        public override bool IsNegative()
-        {
-            return false;
-        }
+
     }
 
 }

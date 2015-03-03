@@ -42,9 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
-    <Compile Include="Formatter\MathFormatter.cs" />
-    <Compile Include="Formatter\MatlabFormatter.cs" />
-    <Compile Include="Formatter\IFormatter.cs" />
+    <Compile Include="Formatter\MathVisitor.cs" />
+    <Compile Include="Formatter\MatlabVisitor.cs" />
+    <Compile Include="Formatter\IVisitor.cs" />
     <Compile Include="MatlabODEGenerator.cs" />
     <Compile Include="SyntaxTree\Operators\Binary\RightPartOfOde.cs" />
     <Compile Include="SyntaxTree\Operators\Multarny\Function.cs" />

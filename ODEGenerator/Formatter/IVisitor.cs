@@ -9,27 +9,29 @@ using ODEGenerator.SyntaxTree.Operators.Unary;
 
 namespace ODEGenerator.Formatter
 {
-    interface IFormatter
+    interface IVisitor
     {
-        StringBuilder Visit(NumericalElement numericalElement);
+        StringBuilder Visit(Constant constant);
 
-        StringBuilder Visit(PlusOperator pOperator);
+        StringBuilder Visit(Substance substance);
 
-        StringBuilder Visit(MinusOperator mOperator);
+        StringBuilder Visit(PlusOperator @operator);
 
-        StringBuilder Visit(MultiplicationOperator mOperator);
+        StringBuilder Visit(MinusOperator @operator);
 
-        StringBuilder Visit(DivisionOperator dOperator);
+        StringBuilder Visit(MultiplicationOperator @operator);
 
-        StringBuilder Visit(ParenthesesOperator pOperator);
+        StringBuilder Visit(DivisionOperator @operator);
+
+        StringBuilder Visit(ParenthesesOperator @operator);
 
         StringBuilder Visit(Function function);
 
         StringBuilder Visit(InfinitesimalIncrement increment);
 
-        StringBuilder Visit(EqualOperator bOperator);
+        StringBuilder Visit(EqualOperator @operator);
 
-        StringBuilder Visit(ExponentiationOperator bOperator);
+        StringBuilder Visit(ExponentiationOperator @operator);
 
         StringBuilder Visit(RightPartOfOde rightPartOfOde);
 

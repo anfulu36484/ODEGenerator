@@ -11,14 +11,11 @@ namespace ODEGenerator.SyntaxTree.Operators.Multarny
 
         }
 
-        public override StringBuilder Accept(IFormatter formatter)
+        public override StringBuilder Accept(IVisitor visitor)
         {
-            return formatter.Visit(this);
+            return visitor.Visit(this);
         }
 
-        public override bool IsNegative()
-        {
-            return false;
-        }
+ 
     }
 }

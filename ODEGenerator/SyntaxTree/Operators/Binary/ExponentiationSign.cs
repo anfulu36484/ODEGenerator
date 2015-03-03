@@ -11,9 +11,9 @@ namespace ODEGenerator.SyntaxTree.Operators.Binary
         {
         }
 
-        public override StringBuilder Accept(IFormatter formatter)
+        public override StringBuilder Accept(IVisitor visitor)
         {
-            return formatter.Visit(this);
+            return visitor.Visit(this);
         }
     }
 }

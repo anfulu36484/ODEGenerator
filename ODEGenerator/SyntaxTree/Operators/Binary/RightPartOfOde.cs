@@ -14,17 +14,23 @@ namespace ODEGenerator.SyntaxTree.Operators.Binary
     {
         private DivisionOperator _divisionOperator;
 
-        public RightPartOfOde(NumericalElement firstElement, NumericalElement secondElement) 
+        public RightPartOfOde(Substance firstElement, NumericalElement secondElement) 
             : base("Правая часть дифференциального уравнения", firstElement, secondElement)
         {
             _divisionOperator = new DivisionOperator();
-            _divisionOperator.AddElements(new InfinitesimalIncrement(firstElement),
+            DivisionOperator.AddElements(new InfinitesimalIncrement(firstElement),
                                      new InfinitesimalIncrement(secondElement));
         }
 
-        public override StringBuilder Accept(IFormatter formatter)
+        public DivisionOperator DivisionOperator
         {
-            return formatter.Visit(_divisionOperator);
+            get { return _divisionOperator; }
         }
+
+        public override StringBuilder Accept(IVisitor visitor)
+        {
+            return visitor.Visit(this);
+        }
+
     }
 }

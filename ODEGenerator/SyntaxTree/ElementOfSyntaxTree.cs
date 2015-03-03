@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using ODEGenerator.Formatter;
-using IFormatter = ODEGenerator.Formatter.IFormatter;
 
 namespace ODEGenerator.SyntaxTree
 {
@@ -30,9 +29,8 @@ namespace ODEGenerator.SyntaxTree
             return _name.GetHashCode();
         }
 
-        public abstract StringBuilder Accept(IFormatter formatter);
+        public abstract StringBuilder Accept(IVisitor visitor);
 
-        public abstract bool IsNegative();
 
     }
 }

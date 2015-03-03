@@ -13,14 +13,11 @@ namespace ODEGenerator.SyntaxTree.Operators.Multarny
             Elements.AddRange(arguments);
         }
 
-        public override StringBuilder Accept(IFormatter formatter)
+        public override StringBuilder Accept(IVisitor visitor)
         {
-            return formatter.Visit(this);
+            return visitor.Visit(this);
         }
 
-        public override bool IsNegative()
-        {
-            return false;
-        }
+
     }
 }

@@ -14,7 +14,7 @@ namespace ODEGenerator
         private ODE ode;
         private double[] timeArray;
         private GroupOfSubstances[] arrayOfGroupOfSubstances;
-        MatlabFormatter matlabFormatter = new MatlabFormatter();
+        MatlabVisitor _matlabVisitor = new MatlabVisitor();
 
 
         public MatlabODEGenerator(ODE ode, double[] timeArray)
@@ -41,7 +41,10 @@ namespace ODEGenerator
 
             sb.AppendLine("%Система дифференциальных уравнений");
             foreach (var expression in ode.CreateExpressions())
-                sb.AppendLine(expression.ToString());
+            {
+                sb.Append(expression.Accept(_matlabVisitor));
+                sb.AppendLine(";");
+            }
 
             return sb;
         }
@@ -84,7 +87,7 @@ namespace ODEGenerator
                             groupOfSubstances.NameOfGroup,
                             timeArray.Length,
                             substance.Key,
-                            matlabFormatter.NameOfinputArray,
+                            _matlabVisitor.NameOfinputArray,
                             timeArray.Length,
                             substance.Value.ODEId
                             );
@@ -109,7 +112,7 @@ namespace ODEGenerator
                         substance.Name,
                         timeArray.Length,
                         1,
-                        matlabFormatter.NameOfinputArray,
+                        _matlabVisitor.NameOfinputArray,
                         timeArray.Length,
                         substance.ODEId
                         );

@@ -14,7 +14,7 @@ namespace ODEGenerator
         static void Main(string[] args)
         {
 
-            Test0();
+            Test1();
             Console.Read();
         }
 
@@ -32,7 +32,7 @@ namespace ODEGenerator
             Constant k = new Constant("k",1.2);
 
             ode.Add(A,B,k,C);
-            ode.PrintResult(new MathFormatter());
+            ode.PrintResult(new MathVisitor());
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace ODEGenerator
             Constant k = new Constant("k", 1.2);
 
             ode.Add( A, B , k, D,C);
-            ode.PrintResult(new MathFormatter());
+            ode.PrintResult(new MathVisitor());
         }
 
         /// <summary>
@@ -72,11 +72,10 @@ namespace ODEGenerator
             ode.Add(A, B ,k1, D, C );
             ode.Add( D, C , k2, A, B );
 
-            ode.PrintResult(new MathFormatter());
+            ode.PrintResult(new MathVisitor());
 
             MatlabODEGenerator matlabOdeGenerator = new MatlabODEGenerator(ode,new []{0.0,10,20});
-            matlabOdeGenerator.Generate("test");
-            Console.WriteLine("\nМатлаб\n");
+            matlabOdeGenerator.Generate(@"D:\С_2013\ODEGenerator\test\test1");
         }
 
         /// <summary>
@@ -113,7 +112,7 @@ namespace ODEGenerator
 
             ode.Add(R[L-1], M , kp,R[L]);
 
-            ode.PrintResult(new MathFormatter());
+            ode.PrintResult(new MathVisitor());
 
             MatlabODEGenerator matlabOdeGenerator = new MatlabODEGenerator(ode, 
                 Enumerable.Range(0,100).Select(n=>(double)n/10f).ToArray(),R);

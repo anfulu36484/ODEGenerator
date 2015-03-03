@@ -22,9 +22,6 @@
             get { return _secondElement; }
         }
 
-        public override bool IsNegative()
-        {
-            return false;
-        }
+
     }
 }

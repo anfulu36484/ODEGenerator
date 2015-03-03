@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using ODEGenerator.Formatter;
 
 namespace ODEGenerator.SyntaxTree.Operators.Multarny
 {
@@ -35,7 +37,6 @@ namespace ODEGenerator.SyntaxTree.Operators.Multarny
             if (newElements.Count() != 0)
                 _elements.AddRange(elementOfSyntaxTree);
         }
-
 
     }
 }

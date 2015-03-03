@@ -266,12 +266,12 @@ namespace ODEGenerator
         }
 
 
-        public void PrintResult(IFormatter formatter)
+        public void PrintResult(IVisitor visitor)
         {
             List<ElementOfSyntaxTree> result = CreateExpressions();
             foreach (var n in result)
             {
-                Console.WriteLine(n.Accept(formatter));
+                Console.WriteLine(n.Accept(visitor));
             }
         }
 
