@@ -4,6 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ODEGenerator.Formatter;
+using ODEGenerator.SyntaxTree;
+using ODEGenerator.SyntaxTree.Numerical;
+using ODEGenerator.SyntaxTree.Operators.Binary;
+using ODEGenerator.SyntaxTree.Operators.Multarny;
+using ODEGenerator.SyntaxTree.Operators.Unary;
 
 namespace ODEGenerator
 {
@@ -13,22 +18,7 @@ namespace ODEGenerator
 
         private List<Constant> _rateConstants = new List<Constant>(); 
 
-        private ReactionsList _reactions;
-
-
-        private ShellFormatter _shellFormatter;
-
-        public ODE()
-        {
-            _shellFormatter = new ShellFormatter(new MathFormatter());
-            _reactions = new ReactionsList(_shellFormatter);
-        }
-
-
-        public void ResetOutputFormat(IFormatter formatter)
-        {
-            _shellFormatter.ResetFormatter(formatter);
-        }
+        private ReactionsList _reactions = new ReactionsList();
 
 
         #region Добавление новых реакций
@@ -81,84 +71,207 @@ namespace ODEGenerator
                 _rateConstants.Add(constant);
         }
 
-        
 
-        /// <summary>
-        /// Добавить новую реакцию
-        /// Пример: А->B
-        /// </summary>
-        /// <param name="interactingSubstances">A - исходный элемент</param>
-        /// <param name="constant">k - контстанта скорости</param>
-        /// <param name="theResultingSubstance">С - элемент, образовавшийся из элемента А</param>
-        public void Add(Substance interactingSubstances, Constant constant, Substance theResultingSubstance)
+        void AddReaction(Substance[] interactingSubstances, Constant constant, Substance[] theResultingSubstance)
         {
-            Reactions.Add(new []{interactingSubstances}, constant, new []{theResultingSubstance});
-            AddNewSubstances(new []{interactingSubstances}, new[] { theResultingSubstance });
-            AddNewRateConstant(constant);
-        }
-
-
-        /// <summary>
-        /// Добавить новую реакцию
-        /// Пример: А+B->C
-        /// </summary>
-        /// <param name="interactingSubstances">A,B - взаимодействующие элементы</param>
-        /// <param name="constant">k - контстанта скорости</param>
-        /// <param name="theResultingSubstance">С - продукт взаимодействия элементов А и В</param>
-        public void Add(Substance[] interactingSubstances, Constant constant, Substance theResultingSubstance)
-        {
-            Reactions.Add(interactingSubstances,constant,new []{theResultingSubstance});
-            AddNewSubstances(interactingSubstances, new[] {theResultingSubstance});
+            Reactions.Add(interactingSubstances, constant, theResultingSubstance);
+            AddNewSubstances(interactingSubstances, theResultingSubstance);
             AddNewRateConstant(constant);
         }
 
         /// <summary>
-        /// Добавить новую реакцию
-        /// Пример: А+B->C+D
+        /// Добавить новую реакцию, пример А->B
         /// </summary>
-        /// <param name="interactingSubstances">A,B - взаимодействующие элементы</param>
-        /// <param name="constant">k - контстанта скорости</param>
-        /// <param name="theResultingSubstances">С, D - продукты взаимодействия элементов А и В</param>
-        public void Add(Substance[] interactingSubstances, Constant constant, Substance[] theResultingSubstances)
+        /// <param name="initialSubstance">Исходное вещество (А)</param>
+        /// <param name="constant">k - контстанта скорости реакции</param>
+        /// <param name="resultingSubstance">Продукт реакции (B)</param>
+        public void Add(Substance initialSubstance, Constant constant, Substance resultingSubstance)
         {
-            Reactions.Add(interactingSubstances, constant, theResultingSubstances);
-            AddNewSubstances(interactingSubstances, theResultingSubstances);
-            AddNewRateConstant(constant);
+            AddReaction(new[] { initialSubstance }, constant, new[] { resultingSubstance });
         }
 
         /// <summary>
-        /// Добавить новую реакцию
-        /// Пример: А->B+C
+        /// Добавить новую реакцию, пример А->B+С
         /// </summary>
-        /// <param name="interactingSubstances">A,B - взаимодействующие элементы</param>
-        /// <param name="constant">k - контстанта скорости</param>
-        /// <param name="theResultingSubstances">С, D - продукты взаимодействия элементов А и В</param>
-        public void Add(Substance interactingSubstances, Constant constant, Substance[] theResultingSubstances)
+        /// <param name="initialSubstance">Исходное вещество (А)</param>
+        /// <param name="constant">k - контстанта скорости реакции</param>
+        /// <param name="firstResultingSubstance">Первый продукт реакции (B)</param>
+        /// <param name="secondResultingSubstance">Второй продукт реакции (С)</param>
+        public void Add(Substance initialSubstance, 
+                        Constant constant, 
+                        Substance firstResultingSubstance,
+                        Substance secondResultingSubstance)
         {
-            Reactions.Add(new []{interactingSubstances}, constant, theResultingSubstances);
-            AddNewSubstances(new []{interactingSubstances}, theResultingSubstances);
-            AddNewRateConstant(constant);
+            AddReaction(new[] { initialSubstance }, constant, new[] { firstResultingSubstance, secondResultingSubstance });
         }
+
+        /// <summary>
+        /// Добавить новую реакцию, пример А->B+С+D
+        /// </summary>
+        /// <param name="initialSubstance">Исходное вещество (А)</param>
+        /// <param name="constant">k - контстанта скорости реакции</param>
+        /// <param name="firstResultingSubstance">Первый продукт реакции (B)</param>
+        /// <param name="secondResultingSubstance">Второй продукт реакции (С)</param>
+        /// <param name="thirdReactiveSubstance">Третий продукт реакции (D)</param>
+        public void Add(Substance initialSubstance,
+                        Constant constant,
+                        Substance firstResultingSubstance,
+                        Substance secondResultingSubstance,
+                        Substance thirdReactiveSubstance)
+        {
+            AddReaction(new[] { initialSubstance }, constant, new[] { firstResultingSubstance, secondResultingSubstance, thirdReactiveSubstance });
+        }
+
+
+        /// <summary>
+        /// Добавить новую реакцию, пример: А+B->C
+        /// </summary>
+        /// <param name="firstReactiveSubstance">Первое вещество, вступающее в реакцию (А)</param>
+        /// <param name="secondReactiveSubstance">Второе вещество, вступающее в реакцию (B)</param>
+        /// <param name="constant">k - контстанта скорости реакции</param>
+        /// <param name="theResultingSubstance">Продукт реакции (С)</param>
+        public void Add(Substance firstReactiveSubstance,
+                        Substance secondReactiveSubstance,
+                        Constant constant,
+                        Substance theResultingSubstance)
+        {
+            AddReaction(new[] { firstReactiveSubstance, secondReactiveSubstance }, constant, new[] { theResultingSubstance });
+        }
+
+        /// <summary>
+        /// Добавить новую реакцию, пример: А+B->C+D
+        /// </summary>
+        /// <param name="firstReactiveSubstance">Первое вещество, вступающее в реакцию (А)</param>
+        /// <param name="secondReactiveSubstance">Второе вещество, вступающее в реакцию (B)</param>
+        /// <param name="constant">k - контстанта скорости реакции</param>
+        /// <param name="firstResultingSubstance">Первый продукт реакции (C)</param>
+        /// <param name="secondResultingSubstance">Второй продукт реакции (D)</param>
+        public void Add(Substance firstReactiveSubstance,
+                        Substance secondReactiveSubstance,
+                        Constant constant,
+                        Substance firstResultingSubstance,
+                        Substance secondResultingSubstance)
+        {
+            AddReaction(new[] { firstReactiveSubstance, secondReactiveSubstance }, constant,
+                new[] { firstResultingSubstance, secondResultingSubstance });
+        }
+
+        /// <summary>
+        /// Добавить новую реакцию, пример: А+B->C+D+E
+        /// </summary>
+        /// <param name="firstReactiveSubstance">Первое вещество, вступающее в реакцию (А)</param>
+        /// <param name="secondReactiveSubstance">Второе вещество, вступающее в реакцию (B)</param>
+        /// <param name="constant">k - контстанта скорости реакции</param>
+        /// <param name="firstResultingSubstance">Первый продукт реакции (C)</param>
+        /// <param name="secondResultingSubstance">Второй продукт реакции (D)</param>
+        /// <param name="thirdResultingSubstance">Третий продукт реакции (E)</param>
+        public void Add(Substance firstReactiveSubstance,
+                        Substance secondReactiveSubstance,
+                        Constant constant,
+                        Substance firstResultingSubstance,
+                        Substance secondResultingSubstance,
+                        Substance thirdResultingSubstance)
+        {
+            AddReaction(new[] { firstReactiveSubstance, secondReactiveSubstance },
+                constant, new[] { firstResultingSubstance, secondResultingSubstance, thirdResultingSubstance });
+        }
+
+        /// <summary>
+        /// Добавить новую реакцию, пример: А+B+С->D
+        /// </summary>
+        /// <param name="firstReactiveSubstance">Первое вещество, вступающее в реакцию (А)</param>
+        /// <param name="secondReactiveSubstance">Второе вещество, вступающее в реакцию (B)</param>
+        /// <param name="thirdReactiveSubstance">Третье вещество, вступающее в реакцию (С)</param>
+        /// <param name="constant">k - контстанта скорости реакции</param>
+        /// <param name="theResultingSubstance">Продукт реакции (D)</param>
+        public void Add(Substance firstReactiveSubstance,
+                        Substance secondReactiveSubstance,
+                        Substance thirdReactiveSubstance,
+                        Constant constant,
+                        Substance theResultingSubstance)
+        {
+            AddReaction(new[] { firstReactiveSubstance, secondReactiveSubstance,thirdReactiveSubstance },
+                constant, new[] { theResultingSubstance });
+        }
+
+        /// <summary>
+        /// Добавить новую реакцию, пример: А+B+С->D+E
+        /// </summary>
+        /// <param name="firstReactiveSubstance">Первое вещество, вступающее в реакцию (А)</param>
+        /// <param name="secondReactiveSubstance">Второе вещество, вступающее в реакцию (B)</param>
+        /// <param name="thirdReactiveSubstance">Третье вещество, вступающее в реакцию (С)</param>
+        /// <param name="constant">k - контстанта скорости реакции</param>
+        /// <param name="firstResultingSubstance">Первый продукт реакции (D)</param>
+        /// <param name="secondResultingSubstance">Второй продукт реакции (E)</param>
+        public void Add(Substance firstReactiveSubstance,
+                        Substance secondReactiveSubstance,
+                        Substance thirdReactiveSubstance,
+                        Constant constant,
+                        Substance firstResultingSubstance,
+                        Substance secondResultingSubstance)
+        {
+            AddReaction(new[] { firstReactiveSubstance, secondReactiveSubstance, thirdReactiveSubstance },
+                constant, new[] { firstResultingSubstance, secondResultingSubstance });
+        }
+
+        /// <summary>
+        /// Добавить новую реакцию, пример: А+B+С->D+E+F
+        /// </summary>
+        /// <param name="firstReactiveSubstance">Первое вещество, вступающее в реакцию (А)</param>
+        /// <param name="secondReactiveSubstance">Второе вещество, вступающее в реакцию (B)</param>
+        /// <param name="thirdReactiveSubstance">Третье вещество, вступающее в реакцию (С)</param>
+        /// <param name="constant">k - контстанта скорости реакции</param>
+        /// <param name="firstResultingSubstance">Первый продукт реакции (D)</param>
+        /// <param name="secondResultingSubstance">Второй продукт реакции (E)</param>
+        /// <param name="thirdResultingSubstance">Третий продукт реакции (F)</param>
+        public void Add(Substance firstReactiveSubstance,
+                        Substance secondReactiveSubstance,
+                        Substance thirdReactiveSubstance,
+                        Constant constant,
+                        Substance firstResultingSubstance,
+                        Substance secondResultingSubstance, 
+                        Substance thirdResultingSubstance)
+        {
+            AddReaction(new[] { firstReactiveSubstance, secondReactiveSubstance, thirdReactiveSubstance },
+                constant, new[] { firstResultingSubstance, secondResultingSubstance, thirdResultingSubstance });
+        }
+
 
 
         #endregion
 
 
-        
-
-
-        public List<StringBuilder> CreateExpressions()
+        public List<ElementOfSyntaxTree> CreateExpressions()
         {
-            return _shellFormatter.CreateExpressions(this);
+            List<ElementOfSyntaxTree> differentialEquations = new List<ElementOfSyntaxTree>();
+
+            Constant t = new Constant("t",0);
+
+            foreach (var substance in Substances)
+            {
+                //Правая часть уравнения
+                RightPartOfOde rightPartOfOde = new RightPartOfOde(substance,t);
+
+
+                //Левая часть уравнения
+                PlusOperator plusOperator = new PlusOperator();
+                plusOperator.AddElements(Reactions.GetExpressionOfExpenditure(substance),
+                                        Reactions.GetExpressionOfFormation(substance));
+
+                
+                differentialEquations.Add(new EqualOperator(rightPartOfOde,plusOperator));
+
+            }
+            return differentialEquations;
         }
 
 
-        public void PrintResult()
+        public void PrintResult(IFormatter formatter)
         {
-            List<StringBuilder> result = CreateExpressions();
-            foreach (var stringBuilder in result)
+            List<ElementOfSyntaxTree> result = CreateExpressions();
+            foreach (var n in result)
             {
-                Console.WriteLine(stringBuilder.ToString());
+                Console.WriteLine(n.Accept(formatter));
             }
         }
 

@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using ODEGenerator.Formatter;
+using ODEGenerator.SyntaxTree.Numerical;
 
 namespace ODEGenerator
 {
@@ -13,7 +14,7 @@ namespace ODEGenerator
         static void Main(string[] args)
         {
 
-            Test5();
+            Test0();
             Console.Read();
         }
 
@@ -30,8 +31,8 @@ namespace ODEGenerator
 
             Constant k = new Constant("k",1.2);
 
-            ode.Add(new []{A,B},k,C);
-            ode.PrintResult();
+            ode.Add(A,B,k,C);
+            ode.PrintResult(new MathFormatter());
         }
 
         /// <summary>
@@ -48,8 +49,8 @@ namespace ODEGenerator
 
             Constant k = new Constant("k", 1.2);
 
-            ode.Add(new[] { A, B }, k, new []{D,C});
-            ode.PrintResult();
+            ode.Add( A, B , k, D,C);
+            ode.PrintResult(new MathFormatter());
         }
 
         /// <summary>
@@ -68,15 +69,14 @@ namespace ODEGenerator
             Constant k1 = new Constant("k1",1.2);
             Constant k2 = new Constant("k2",1.7);
 
-            ode.Add(new []{ A, B },k1,new []{ D, C });
-            ode.Add(new[] { D, C }, k2, new[] { A, B });
+            ode.Add(A, B ,k1, D, C );
+            ode.Add( D, C , k2, A, B );
 
-            ode.PrintResult();
+            ode.PrintResult(new MathFormatter());
 
             MatlabODEGenerator matlabOdeGenerator = new MatlabODEGenerator(ode,new []{0.0,10,20});
             matlabOdeGenerator.Generate("test");
             Console.WriteLine("\nМатлаб\n");
-            ode.PrintResult();
         }
 
         /// <summary>
@@ -96,24 +96,24 @@ namespace ODEGenerator
             {
                 R.CreateSubstance(0.0, i);
             }
-            R[1].InitialValue = 0.01;
+            R[1].Value = 0.01;
 
  
             Constant kp = new Constant("kp",2);
             Constant kd = new Constant("kd",1.3);
 
 
-            ode.Add(new []{R[1],M},kp,R[2]);
+            ode.Add(R[1],M,kp,R[2]);
 
             for (int i = 2; i < L-1; i++)
             {
-                ode.Add(new[] { R[i], M }, kp, R[i+1]);
-                ode.Add(new[] { R[i + 1] }, kd, new[] { R[i], M });
+                ode.Add(R[i], M , kp, R[i+1]);
+                ode.Add(R[i + 1] , kd, R[i], M );
             }
 
-            ode.Add(new[] { R[L-1], M }, kp,R[L]);
+            ode.Add(R[L-1], M , kp,R[L]);
 
-            ode.PrintResult();
+            ode.PrintResult(new MathFormatter());
 
             MatlabODEGenerator matlabOdeGenerator = new MatlabODEGenerator(ode, 
                 Enumerable.Range(0,100).Select(n=>(double)n/10f).ToArray(),R);
@@ -154,31 +154,31 @@ namespace ODEGenerator
             Constant KpC = new Constant("KpC",5);
 
 
-            ode.Add(new []{To,M},Kk,Co);
-            ode.Add(Co, Kd, new[]{ To, M });
+            ode.Add(To,M,Kk,Co);
+            ode.Add(Co, Kd,  To, M );
 
-            ode.Add(new []{To,M},KpT,Tt[1]);
-            ode.Add(new[] { Co, M }, KpC, Cc[1]);
+            ode.Add(To,M,KpT,Tt[1]);
+            ode.Add( Co, M , KpC, Cc[1]);
 
             for (int j = 2; j <= L; j++)
             {
                 //Реакции роста цепи
-                ode.Add(new []{Tt[j-1],M},KpT,Tt[j]);
-                ode.Add(new[] { Tc[j - 1], M }, KpT, Tt[j]);
+                ode.Add(Tt[j-1],M,KpT,Tt[j]);
+                ode.Add(Tc[j - 1], M , KpT, Tt[j]);
 
-                ode.Add(new[] { Cc[j - 1], M }, KpC, Cc[j]);
-                ode.Add(new[] { Ct[j - 1], M }, KpC, Cc[j]);
+                ode.Add( Cc[j - 1], M , KpC, Cc[j]);
+                ode.Add(Ct[j - 1], M , KpC, Cc[j]);
             }
 
 
             for (int j = 1; j <= L; j++)
             {
                 //Реакции превращения цис-стереорегулирующих активных центров, в транс-центры
-                ode.Add(new[] { Tt[j], M }, Kk, Ct[j]);
-                ode.Add(new[] { Tc[j], M }, Kk, Cc[j]);
+                ode.Add(Tt[j], M , Kk, Ct[j]);
+                ode.Add(Tc[j], M , Kk, Cc[j]);
 
-                ode.Add(Cc[j], Kd, new[] { Tc[j], M });
-                ode.Add(Ct[j], Kd, new[] { Tt[j], M });
+                ode.Add(Cc[j], Kd,  Tc[j], M );
+                ode.Add(Ct[j], Kd, Tt[j], M );
             }
 
 
@@ -198,7 +198,7 @@ namespace ODEGenerator
             double MoCo = 3252.79;// Mo/Co
 
             Substance M = new Substance("M",10);//Мономер
-            Substance C = new Substance("C",M.InitialValue/MoCo);//Катализатор
+            Substance C = new Substance("C",M.Value/MoCo);//Катализатор
             Substance H2O = new Substance("H2O", 0.0001);//Агент передачи - вода
             Substance H = new Substance("H",0);//H+
             Substance OH = new Substance("OH",0);//OH-
@@ -220,12 +220,12 @@ namespace ODEGenerator
                 D.CreateSubstance(0, j);
 
 
-            ode.Add(new []{M,C},ko,P[1]);
+            ode.Add(M,C,ko,P[1]);
             for (int j = 1; j <= L-1; j++)
             {
-                ode.Add(new []{P[j],M},kj,P[j+1]);
-                ode.Add(new []{P[j],M},kt,new []{D[j],P[1]});
-                ode.Add(new []{P[j],H2O},ktc,new []{D[j],H,OH});
+                ode.Add(P[j],M,kj,P[j+1]);
+                ode.Add(P[j],M,kt,D[j],P[1]);
+                ode.Add(P[j],H2O,ktc,D[j],H,OH);
             }
 
             double[] timeAray = new double[] {0, 10, 90, 150, 200, 300, 400};
@@ -252,14 +252,13 @@ namespace ODEGenerator
             double MoCo = 4007;// Mo/Co
 
             Substance M = new Substance("M",1);//Мономер
-            Substance C = new Substance("C", M.InitialValue / MoCo);//Катализатор
+            Substance C = new Substance("C", M.Value / MoCo);//Катализатор
 
             GroupOfSubstances P = new GroupOfSubstances("P");//Живая полимерная цепь
             GroupOfSubstances D = new GroupOfSubstances("D");//Мертвая полимерная цепь
 
             Constant ko = new Constant("ko",0.003);
             Constant kp = new Constant("kp",0.9);
-            Constant kt = new Constant("kt",Math.Pow(10,-6));
             Constant ktp = new Constant("ktp",Math.Pow(10,-6));
             Constant kts = new Constant("kts",Math.Pow(10,-7));
 
@@ -272,15 +271,15 @@ namespace ODEGenerator
                 D.CreateSubstance(0, j);
 
             //Реакция инициирования
-            ode.Add(new []{M,C},ko,P[1]);
+            ode.Add(M,C,ko,P[1]);
 
             //Реакция роста цепи
             for (int j = 1; j <= L-1; j++)
-                ode.Add(new []{P[j],M},kp,P[j+1]); 
+                ode.Add(P[j],M,kp,P[j+1]); 
 
             //Внутремолекулярный обрыв цепи
             for (int j = 1; j <= L; j++)
-                ode.Add(new[] { P[j], M }, kts, D[j]);
+                ode.Add( P[j], M , kts, D[j]);
 
             
             for (int i = 1; i <= L; i++)
@@ -288,13 +287,13 @@ namespace ODEGenerator
                 for (int j = i; j <= L; j++)
                 {
                     //Взаимодействие двух живых макромолекул с образованием одной мертвой полимерной цепи
-                    ode.Add(new []{P[i],P[j]},ktp,D[i+j]);
+                    ode.Add(P[i],P[j],ktp,D[i+j]);
                     //Взаимодействие живой и мертвой макромолекулы с образованием одной мертвой полимерной цепи
-                    ode.Add(new[] { P[i], D[j] }, ktp, D[i + j]);
+                    ode.Add(P[i], D[j] , ktp, D[i + j]);
                 }
             }
 
-            double[] timeAray = new double[] { 0, 1,10,20,30 };
+            double[] timeAray = { 0, 1,10,20,30 };
 
             MatlabODEGenerator matlabOdeGenerator = new MatlabODEGenerator(
                 ode,

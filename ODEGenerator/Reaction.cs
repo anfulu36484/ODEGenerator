@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ODEGenerator.Formatter;
+using ODEGenerator.SyntaxTree;
+using ODEGenerator.SyntaxTree.Numerical;
+using ODEGenerator.SyntaxTree.Operators.Multarny;
 
 namespace ODEGenerator
 {
@@ -16,18 +19,14 @@ namespace ODEGenerator
 
         private Constant _constant;
 
-        private ShellFormatter _shellFormatter;
-
 
         public Reaction(Substance[] interactingSubstances, 
                         Constant constant,
-                        Substance theReactionProduct,
-                        ShellFormatter shellFormatter)
+                        Substance theReactionProduct)
         {
             _interactingSubstances = interactingSubstances.ToList();
             _constant = constant;
             _reactionProduct = theReactionProduct;
-            _shellFormatter = shellFormatter;
         }
 
 
@@ -58,11 +57,14 @@ namespace ODEGenerator
         /// Получить выражение расходования
         /// </summary>
         /// <returns></returns>
-        public StringBuilder GetExpressionOfExpenditure()
+        public ElementOfSyntaxTree GetExpressionOfExpenditure()
         {
-            return _shellFormatter.GetExpressionOfExpenditure(this);
+            MultiplicationOperator multiplicationOperator = new MultiplicationOperator();
+            multiplicationOperator.AddElement(Constant);
+            multiplicationOperator.AddElements(_interactingSubstances);
+            return multiplicationOperator;
         }
 
-
+        
     }
 }

@@ -41,20 +41,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Formatter\ShellFormatter.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Formatter\MathFormatter.cs" />
     <Compile Include="Formatter\MatlabFormatter.cs" />
     <Compile Include="Formatter\IFormatter.cs" />
     <Compile Include="MatlabODEGenerator.cs" />
-    <Compile Include="Constant.cs" />
+    <Compile Include="SyntaxTree\Operators\Binary\RightPartOfOde.cs" />
+    <Compile Include="SyntaxTree\Operators\Multarny\Function.cs" />
+    <Compile Include="SyntaxTree\Numerical\Constant.cs" />
     <Compile Include="GroupOfSubstances.cs" />
     <Compile Include="Reaction.cs" />
-    <Compile Include="Substance.cs" />
+    <Compile Include="SyntaxTree\ElementOfSyntaxTree.cs" />
+    <Compile Include="SyntaxTree\Numerical\MinusOne.cs" />
+    <Compile Include="SyntaxTree\Operators\Binary\BinaryOperator.cs" />
+    <Compile Include="SyntaxTree\Operators\Multarny\DivisionOperator.cs" />
+    <Compile Include="SyntaxTree\Operators\Binary\EqualOperator.cs" />
+    <Compile Include="SyntaxTree\Operators\Binary\ExponentiationSign.cs" />
+    <Compile Include="SyntaxTree\Operators\Unary\InfinitesimalIncrement.cs" />
+    <Compile Include="SyntaxTree\Operators\Multarny\MinusOperator.cs" />
+    <Compile Include="SyntaxTree\Numerical\NumericalElement.cs" />
+    <Compile Include="SyntaxTree\Operators\Multarny\MultarnyOperator.cs" />
+    <Compile Include="SyntaxTree\Operators\Multarny\MultiplicationOperator.cs" />
+    <Compile Include="SyntaxTree\Operators\Multarny\ParenthesesOperator.cs" />
+    <Compile Include="SyntaxTree\Operators\Multarny\PlusOperator.cs" />
+    <Compile Include="SyntaxTree\Operators\OperatorElement.cs" />
+    <Compile Include="SyntaxTree\Numerical\Substance.cs" />
     <Compile Include="ReactionsList.cs" />
     <Compile Include="ODE.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SubstanceComparer.cs" />
+    <Compile Include="SyntaxTree\Numerical\SubstanceComparer.cs" />
+    <Compile Include="SyntaxTree\Operators\Unary\UnaryOperator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

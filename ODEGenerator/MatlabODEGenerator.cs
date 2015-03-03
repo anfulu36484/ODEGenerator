@@ -20,7 +20,6 @@ namespace ODEGenerator
         public MatlabODEGenerator(ODE ode, double[] timeArray)
         {
             this.ode = ode;
-            ode.ResetOutputFormat(matlabFormatter);
             this.timeArray = timeArray;
         }
 
@@ -38,7 +37,7 @@ namespace ODEGenerator
 
             sb.AppendLine("%Список констант");
             foreach (var rateConstant in ode.RateConstants)
-                sb.AppendLine(string.Format("{0} = initialValues.{0};",rateConstant.NameOfRateConstant));
+                sb.AppendLine(string.Format("{0} = initialValues.{0};",rateConstant.Name));
 
             sb.AppendLine("%Система дифференциальных уравнений");
             foreach (var expression in ode.CreateExpressions())
@@ -54,8 +53,8 @@ namespace ODEGenerator
             sb.AppendLine(string.Format("out=zeros(1,{0});", ode.Substances.Count));
 
             foreach (var substance in ode.Substances)
-                if(substance.InitialValue!=0)
-                    sb.AppendLine(string.Format("out(1,{0})={1};", substance.ODEId, substance.InitialValue.ToString().Replace(',', '.')));
+                if(substance.Value!=0)
+                    sb.AppendLine(string.Format("out(1,{0})={1};", substance.ODEId, substance.Value.ToString().Replace(',', '.')));
 
             return sb;
         }
@@ -93,7 +92,7 @@ namespace ODEGenerator
                     else
                     {
                         throw new Exception(string.Format("Элемент {0} входит в состав группы {1}, но не входит в состав системы дифференциальных уравнений",
-                        substance.Value.NameOfSubstance,groupOfSubstances.NameOfGroup));
+                        substance.Value.Name,groupOfSubstances.NameOfGroup));
                     }
                 }
             }
@@ -107,7 +106,7 @@ namespace ODEGenerator
             {
 
                     sb.AppendFormat("{0}(1:{1},{2})={3}(1:{4},{5});\n",
-                        substance.NameOfSubstance,
+                        substance.Name,
                         timeArray.Length,
                         1,
                         matlabFormatter.NameOfinputArray,
@@ -146,8 +145,8 @@ namespace ODEGenerator
             sb.AppendLine("%Определение начальных значений констант");
             foreach (var rateConstant in ode.RateConstants)
             {
-                sb.AppendFormat("initialValues.{0}={1};\n", rateConstant.NameOfRateConstant,
-                    rateConstant.ValueOfRateConstant.ToString().Replace(',', '.'));
+                sb.AppendFormat("initialValues.{0}={1};\n", rateConstant.Name,
+                    rateConstant.Value.ToString().Replace(',', '.'));
             }
 
             sb.Append("Time\n\n");

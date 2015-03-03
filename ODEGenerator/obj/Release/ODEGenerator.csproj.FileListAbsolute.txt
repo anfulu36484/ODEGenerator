@@ -3,3 +3,4 @@ D:\С_2013\ODEGenerator\ODEGenerator\bin\Release\ODEGenerator.exe
 D:\С_2013\ODEGenerator\ODEGenerator\bin\Release\ODEGenerator.pdb
 D:\С_2013\ODEGenerator\ODEGenerator\obj\Release\ODEGenerator.exe
 D:\С_2013\ODEGenerator\ODEGenerator\obj\Release\ODEGenerator.pdb
+D:\С_2013\ODEGenerator\ODEGenerator\obj\Release\ODEGenerator.csprojResolveAssemblyReference.cache
