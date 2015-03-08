@@ -51,12 +51,14 @@
     <Compile Include="CodeGenerator\CSharpCodeGenerator\CsharpCodeManager.cs" />
     <Compile Include="CodeGenerator\CSharpCodeGenerator\DataSaver.cs" />
     <Compile Include="CodeGenerator\CSharpCodeGenerator\ODEsSolver.cs" />
+    <Compile Include="CodeGenerator\PureCCodeGenerator\PureCCodeGenerator.cs" />
     <Compile Include="Formatter\CsharpVisitor.cs" />
     <Compile Include="Formatter\MathVisitor.cs" />
     <Compile Include="Formatter\MatlabVisitor.cs" />
     <Compile Include="Formatter\IVisitor.cs" />
     <Compile Include="CodeGenerator\MatlabCodeGenerator.cs" />
     <Compile Include="Formatter\ProgrammingLanguageVisitor.cs" />
+    <Compile Include="Formatter\PureCVisitor.cs" />
     <Compile Include="SyntaxTree\ListOfSyntaxTrees.cs" />
     <Compile Include="SyntaxTree\Operators\Binary\RightPartOfOde.cs" />
     <Compile Include="SyntaxTree\Operators\Multarny\Function.cs" />

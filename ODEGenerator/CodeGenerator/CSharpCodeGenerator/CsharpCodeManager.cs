@@ -35,6 +35,9 @@ namespace ODEGenerator.CodeGenerator.CSharpCodeGenerator
 
         public string GenerateCode()
         {
+            string code = _codeGenerator.Generate();
+            File.WriteAllText("test.cs",code);
+            throw new Exception();
             return _codeGenerator.Generate();
         }
 

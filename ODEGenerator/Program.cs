@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using DotNumerics.ODE;
 using ODEGenerator.CodeGenerator;
 using ODEGenerator.CodeGenerator.CSharpCodeGenerator;
+using ODEGenerator.CodeGenerator.PureCCodeGenerator;
 using ODEGenerator.Formatter;
 using ODEGenerator.SyntaxTree.Numerical;
 
@@ -17,7 +19,7 @@ namespace ODEGenerator
         static void Main(string[] args)
         {
 
-            Test7();
+            Test8();
             Console.Read();
         }
 
@@ -387,6 +389,70 @@ namespace ODEGenerator
             CsharpCodeManager csharpCodeManager = new CsharpCodeManager(odEs,timeAray,new OdeExplicitRungeKutta45(),new []{P,D});
             string nameOfDirectory = @"D:\С_2013\ODEGenerator\test\test7";
             csharpCodeManager.SolveODEs(nameOfDirectory);
+        }
+
+
+        /// <summary>
+        /// Полимеризация, протекающая по механизму живых цепей и осложненная  побочными реакциями обрыва цепи
+        /// Rajeev M. Modeling and simulation of poly(lactic acid) polymerization: thesis … PhD. – India, 2006. – 122 p.
+        /// </summary>
+        static void Test8()
+        {
+            ODEs odEs = new ODEs();
+
+            double MoCo = 4007;// Mo/Co
+
+            Substance M = new Substance("M", 1);//Мономер
+            Substance C = new Substance("C", M.Value / MoCo);//Катализатор
+
+            GroupOfSubstances P = new GroupOfSubstances("P");//Живая полимерная цепь
+            GroupOfSubstances D = new GroupOfSubstances("D");//Мертвая полимерная цепь
+
+            Constant ko = new Constant("ko", 0.003);
+            Constant kp = new Constant("kp", 0.9);
+            Constant ktp = new Constant("ktp", Math.Pow(10, -6));
+            Constant kts = new Constant("kts", Math.Pow(10, -7));
+
+            int L = 1000;
+
+            for (int j = 1; j <= L; j++)
+                P.CreateSubstance(0, j);
+
+            for (int j = 1; j <= L * 2; j++)
+                D.CreateSubstance(0, j);
+
+            //Реакция инициирования
+            odEs.Add(M, C, ko, P[1]);
+
+            //Реакция роста цепи
+            for (int j = 1; j <= L - 1; j++)
+                odEs.Add(P[j], M, kp, P[j + 1]);
+
+            //Внутремолекулярный обрыв цепи
+            for (int j = 1; j <= L; j++)
+                odEs.Add(P[j], M, kts, D[j]);
+
+
+            for (int i = 1; i <= L; i++)
+            {
+                for (int j = i; j <= L; j++)
+                {
+                    //Взаимодействие двух живых макромолекул с образованием одной мертвой полимерной цепи
+                    odEs.Add(P[i], P[j], ktp, D[i + j]);
+                    //Взаимодействие живой и мертвой макромолекулы с образованием одной мертвой полимерной цепи
+                    odEs.Add(P[i], D[j], ktp, D[i + j]);
+                }
+            }
+
+            double[] timeAray = { 0, 1, 2 };
+
+            PureCCodeGenerator pureCCodeGenerator = new PureCCodeGenerator(odEs,timeAray);
+            string nameOfDirectory = @"D:\С_2013\ODEGenerator\test\test8";
+            if (!Directory.Exists(nameOfDirectory))
+                Directory.CreateDirectory(nameOfDirectory);
+            File.WriteAllText(@"D:\С_2013\ODEGenerator\test\test8\test.cpp", pureCCodeGenerator.Generate());
+
+    
         }
     }
 }
