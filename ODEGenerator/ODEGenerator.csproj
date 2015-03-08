@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ODEGenerator</RootNamespace>
     <AssemblyName>ODEGenerator</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DotNumerics">
+      <HintPath>..\..\test\testODENumerics\testODENumerics\bin\Debug\DotNumerics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,11 +45,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions.cs" />
+    <Compile Include="CodeGenerator\CodeGenerator.cs" />
+    <Compile Include="CodeGenerator\CSharpCodeGenerator\Compiler.cs" />
+    <Compile Include="CodeGenerator\CSharpCodeGenerator\CsharpCodeGenerator.cs" />
+    <Compile Include="CodeGenerator\CSharpCodeGenerator\CsharpCodeManager.cs" />
+    <Compile Include="CodeGenerator\CSharpCodeGenerator\DataSaver.cs" />
+    <Compile Include="CodeGenerator\CSharpCodeGenerator\ODEsSolver.cs" />
+    <Compile Include="Formatter\CsharpVisitor.cs" />
     <Compile Include="Formatter\MathVisitor.cs" />
     <Compile Include="Formatter\MatlabVisitor.cs" />
     <Compile Include="Formatter\IVisitor.cs" />
-    <Compile Include="MatlabODEGenerator.cs" />
+    <Compile Include="CodeGenerator\MatlabCodeGenerator.cs" />
+    <Compile Include="Formatter\ProgrammingLanguageVisitor.cs" />
+    <Compile Include="SyntaxTree\ListOfSyntaxTrees.cs" />
     <Compile Include="SyntaxTree\Operators\Binary\RightPartOfOde.cs" />
     <Compile Include="SyntaxTree\Operators\Multarny\Function.cs" />
     <Compile Include="SyntaxTree\Numerical\Constant.cs" />
@@ -67,7 +79,7 @@
     <Compile Include="SyntaxTree\Operators\OperatorElement.cs" />
     <Compile Include="SyntaxTree\Numerical\Substance.cs" />
     <Compile Include="ReactionsList.cs" />
-    <Compile Include="ODE.cs" />
+    <Compile Include="ODEs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SyntaxTree\Numerical\SubstanceComparer.cs" />

@@ -9,22 +9,12 @@ using ODEGenerator.SyntaxTree.Operators.Unary;
 
 namespace ODEGenerator.Formatter
 {
-    class MatlabVisitor :MathVisitor
+    class MatlabVisitor :ProgrammingLanguageVisitor
     {
-
-        private string nameOfinputArray = "y";
-        private string nameOfoutputArray = "out";
-
-        public string NameOfinputArray
+        public MatlabVisitor()
         {
-            get { return nameOfinputArray; }
-            set { nameOfinputArray = value; }
-        }
-
-        public string NameOfoutputArray
-        {
-            get { return nameOfoutputArray; }
-            set { nameOfoutputArray = value; }
+            nameOfinputArray = "y";
+            nameOfoutputArray = "out";
         }
 
         public override StringBuilder Visit(Substance substance)

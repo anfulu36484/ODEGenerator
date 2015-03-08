@@ -12,7 +12,7 @@ using ODEGenerator.SyntaxTree.Operators.Unary;
 
 namespace ODEGenerator
 {
-    class ODE
+    class ODEs
     {
         private List<Substance> _substances = new List<Substance>();
 

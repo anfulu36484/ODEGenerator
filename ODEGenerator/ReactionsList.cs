@@ -100,7 +100,7 @@ namespace ODEGenerator
 
             for (int i = 0; i < _fullReactionsList.Count; i++)
             {
-                if (_substanceComparer.Equals(substance,_fullReactionsList[i].TheReactionProduct))
+                if (_substanceComparer.Equals(substance, _fullReactionsList[i].TheReactionProduct))
                 {
                     MultiplicationOperator multiplicationOperator = new MultiplicationOperator();
                     multiplicationOperator.AddElement(_fullReactionsList[i].GetExpressionOfExpenditure());

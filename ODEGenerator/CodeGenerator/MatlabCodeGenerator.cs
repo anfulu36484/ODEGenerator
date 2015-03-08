@@ -1,32 +1,23 @@
 ﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using ODEGenerator.Formatter;
 
-namespace ODEGenerator
+namespace ODEGenerator.CodeGenerator
 {
-    class MatlabODEGenerator
+    class MatlabCodeGenerator :CodeGenerator
     {
-        private ODE ode;
-        private double[] timeArray;
-        private GroupOfSubstances[] arrayOfGroupOfSubstances;
-        MatlabVisitor _matlabVisitor = new MatlabVisitor();
 
-
-        public MatlabODEGenerator(ODE ode, double[] timeArray)
+        public MatlabCodeGenerator(ODEs odEs, double[] timeArray) : base(odEs, timeArray)
         {
-            this.ode = ode;
-            this.timeArray = timeArray;
+            _visitor = new MatlabVisitor();
         }
 
-        public MatlabODEGenerator(ODE ode, double[] timeArray, params GroupOfSubstances[] arrayOfGroupOfSubstances)
-            :this(ode, timeArray)
+        public MatlabCodeGenerator(ODEs odEs, double[] timeArray, params GroupOfSubstances[] arrayOfGroupOfSubstances) 
+            : base(odEs, timeArray, arrayOfGroupOfSubstances)
         {
-            this.arrayOfGroupOfSubstances = arrayOfGroupOfSubstances;
+            _visitor = new MatlabVisitor();
         }
 
         StringBuilder CreateSolveFunction()
@@ -36,13 +27,13 @@ namespace ODEGenerator
             sb.AppendLine("out=zeros(size(y));");
 
             sb.AppendLine("%Список констант");
-            foreach (var rateConstant in ode.RateConstants)
+            foreach (var rateConstant in odEs.RateConstants)
                 sb.AppendLine(string.Format("{0} = initialValues.{0};",rateConstant.Name));
 
             sb.AppendLine("%Система дифференциальных уравнений");
-            foreach (var expression in ode.CreateExpressions())
+            foreach (var expression in odEs.CreateExpressions())
             {
-                sb.Append(expression.Accept(_matlabVisitor));
+                sb.Append(expression.Accept(_visitor));
                 sb.AppendLine(";");
             }
 
@@ -53,9 +44,9 @@ namespace ODEGenerator
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("function out=Ics()");
-            sb.AppendLine(string.Format("out=zeros(1,{0});", ode.Substances.Count));
+            sb.AppendLine(string.Format("out=zeros(1,{0});", odEs.Substances.Count));
 
-            foreach (var substance in ode.Substances)
+            foreach (var substance in odEs.Substances)
                 if(substance.Value!=0)
                     sb.AppendLine(string.Format("out(1,{0})={1};", substance.ODEId, substance.Value.ToString().Replace(',', '.')));
 
@@ -87,7 +78,7 @@ namespace ODEGenerator
                             groupOfSubstances.NameOfGroup,
                             timeArray.Length,
                             substance.Key,
-                            _matlabVisitor.NameOfinputArray,
+                            _visitor.NameOfinputArray,
                             timeArray.Length,
                             substance.Value.ODEId
                             );
@@ -105,14 +96,14 @@ namespace ODEGenerator
         private StringBuilder CreateNotGroupOutput()
         {
             StringBuilder sb = new StringBuilder();
-            foreach (var substance in ode.Substances.Where(n => n.GroupOfSubstances == null))
+            foreach (var substance in odEs.Substances.Where(n => n.GroupOfSubstances == null))
             {
 
                     sb.AppendFormat("{0}(1:{1},{2})={3}(1:{4},{5});\n",
                         substance.Name,
                         timeArray.Length,
                         1,
-                        _matlabVisitor.NameOfinputArray,
+                        _visitor.NameOfinputArray,
                         timeArray.Length,
                         substance.ODEId
                         );
@@ -146,7 +137,7 @@ namespace ODEGenerator
             sb.AppendLine("tic\n");
 
             sb.AppendLine("%Определение начальных значений констант");
-            foreach (var rateConstant in ode.RateConstants)
+            foreach (var rateConstant in odEs.RateConstants)
             {
                 sb.AppendFormat("initialValues.{0}={1};\n", rateConstant.Name,
                     rateConstant.Value.ToString().Replace(',', '.'));
