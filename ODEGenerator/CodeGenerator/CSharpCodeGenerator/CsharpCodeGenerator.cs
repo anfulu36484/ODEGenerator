@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using ODEGenerator.Formatter;
 
 namespace ODEGenerator.CodeGenerator.CSharpCodeGenerator
@@ -33,18 +36,18 @@ namespace ODEGenerator.CodeGenerator.CSharpCodeGenerator
             return sb.ToString();
         }
 
-        string DeclareEquestions()
+        List<string> DeclareEquestions()
         {
-            StringBuilder sb = new StringBuilder();
+            List<string> list = new List<string>(odEs.Substances.Count);
             foreach (var expression in odEs.CreateExpressions())
             {
-                sb.Append(expression.Accept(_visitor));
-                sb.AppendLine(";");
+                list.Add(expression.Accept(_visitor)+";");
             }
-            return sb.ToString();
+            return list;
         }
 
-        public string Generate()
+
+        string Generate(string equestions)
         {
             return string.Format(
                 @"namespace ODENumerics
@@ -53,23 +56,73 @@ namespace ODEGenerator.CodeGenerator.CSharpCodeGenerator
     {{
         {0}
 
-        public static double[] ODEs(double t, double[] {1})
+        public static void ODEs(double t, double[] {1}, double[] {2})
         {{
-            double[] {2} = new double[{3}];
-            {4}
-            return {2};
+            {3}
         }}
     }}
 }}", DeclareConstants(),
    _visitor.NameOfinputArray,
    _visitor.NameOfoutputArray,
-   odEs.Substances.Count,
-   DeclareEquestions());
+   equestions);
         }
 
 
+        private void CreateFullParts(int countOfParts, int sizeOfpart, StringBuilder sb,
+            List<string> equestions,ref int numberOfEquestion,
+            List<string> parts)
+        {
+            for (int i = 0; i < countOfParts; i++)
+            {
+                for (int j = 0; j < sizeOfpart; j++)
+                {
+                    sb.AppendLine(equestions[numberOfEquestion]);
+                    numberOfEquestion++;
+                }
+                parts.Add(sb.ToString());
+                sb.Clear();
+            }
+        }
+
+        private void CreateNotFullPart(ref int numberOfEquestion, StringBuilder sb, List<string> equestions, List<string> parts)
+        {
+            for (; numberOfEquestion < odEs.Substances.Count; )
+            {
+                sb.AppendLine(equestions[numberOfEquestion]);
+                numberOfEquestion++;
+            }
+
+            if (sb.Length > 0)
+                parts.Add(sb.ToString());
+        }
+
+        public List<string> GeneratingAtParts(int countOfParts)
+        {
+            if(countOfParts<1 && countOfParts>odEs.Substances.Count)
+                throw new FormatException();
+            int sizeOfpart = odEs.Substances.Count/countOfParts;
+
+            List<string> equestions = DeclareEquestions();
+
+            List<string> parts = new List<string>(countOfParts);
+
+            int numberOfEquestion = 0;
+
+            StringBuilder sb = new StringBuilder();
+
+            //Создание полных групп 
+            CreateFullParts(countOfParts, sizeOfpart, sb, equestions,ref numberOfEquestion, parts);
+
+            //Неполная группа
+            CreateNotFullPart(ref numberOfEquestion, sb, equestions, parts);
+
+
+            //parts.ToList().ForEach(n=>Console.Write(n+"\n\n\n"));
+
+
+            return parts.Select(Generate).ToList();
+        }
+
         
-
-
     }
 }

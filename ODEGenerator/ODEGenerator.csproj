@@ -24,7 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -53,6 +53,7 @@
     <Compile Include="CodeGenerator\CSharpCodeGenerator\ODEsSolver.cs" />
     <Compile Include="CodeGenerator\PureCCodeGenerator\PureCCodeGenerator.cs" />
     <Compile Include="Formatter\CsharpVisitor.cs" />
+    <Compile Include="Formatter\MapleVisitor.cs" />
     <Compile Include="Formatter\MathVisitor.cs" />
     <Compile Include="Formatter\MatlabVisitor.cs" />
     <Compile Include="Formatter\IVisitor.cs" />

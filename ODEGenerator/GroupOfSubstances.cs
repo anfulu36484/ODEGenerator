@@ -26,6 +26,7 @@ namespace ODEGenerator
         public Substance CreateSubstance(double initialValue, int groupId)
         {
             Substance substance = new Substance(NameOfGroup+groupId,initialValue,this);
+            substance.GroupID = groupId;
             _substances.Add(groupId, substance);
             return substance;
         }

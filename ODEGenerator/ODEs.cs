@@ -9,6 +9,7 @@ using ODEGenerator.SyntaxTree.Numerical;
 using ODEGenerator.SyntaxTree.Operators.Binary;
 using ODEGenerator.SyntaxTree.Operators.Multarny;
 using ODEGenerator.SyntaxTree.Operators.Unary;
+using System.IO;
 
 namespace ODEGenerator
 {
@@ -273,6 +274,19 @@ namespace ODEGenerator
             {
                 Console.WriteLine(n.Accept(visitor));
             }
+        }
+
+        public void SaveResult(string fileName, IVisitor visitor)
+        {
+            List<ElementOfSyntaxTree> result = CreateExpressions();
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                foreach (var n in result)
+                {
+                    sw.WriteLine(n.Accept(visitor));
+                }
+            }
+            
         }
 
     }

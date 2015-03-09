@@ -8,4 +8,4 @@ D:\С_2013\ODEGenerator\ODEGenerator\obj\Debug\ODEGenerator.exe
 D:\С_2013\ODEGenerator\ODEGenerator\obj\Debug\ODEGenerator.pdb
 D:\С_2013\ODEGenerator\ODEGenerator\bin\Debug\ODEGenerator.exe
 D:\С_2013\ODEGenerator\ODEGenerator\bin\Debug\ODEGenerator.pdb
-D:\С_2013\ODEGenerator\ODEGenerator\obj\Debug\ODEGenerator.csprojResolveAssemblyReference.cache
+D:\С_2013\ODEGenerator\ODEGenerator\bin\Debug\DotNumerics.dll

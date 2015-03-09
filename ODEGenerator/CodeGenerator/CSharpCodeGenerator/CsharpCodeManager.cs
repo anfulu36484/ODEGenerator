@@ -9,6 +9,7 @@ namespace ODEGenerator.CodeGenerator.CSharpCodeGenerator
 {
     class CsharpCodeManager
     {
+        private readonly int _countOfCodeParts = 1;
         private readonly GroupOfSubstances[] _groupOfSubstanceses;
         private CsharpCodeGenerator _codeGenerator;
         private Compiler _compiler;
@@ -21,7 +22,7 @@ namespace ODEGenerator.CodeGenerator.CSharpCodeGenerator
         {
             _timeArray = timeArray;
             _codeGenerator = new CsharpCodeGenerator(odes,timeArray);
-            _compiler = new Compiler();
+            _compiler = new Compiler(odes.Substances.Count);
             _odesSolver = new ODEsSolver(odeRungeKutta);
             _odes = odes;
         }
@@ -33,12 +34,16 @@ namespace ODEGenerator.CodeGenerator.CSharpCodeGenerator
             _groupOfSubstanceses = groupOfSubstanceses;
         }
 
-        public string GenerateCode()
+        public CsharpCodeManager(ODEs odes, double[] timeArray, xBaseOdeRungeKutta odeRungeKutta, int countOfCodeParts,
+            GroupOfSubstances[] groupOfSubstanceses)
+            : this(odes, timeArray, odeRungeKutta, groupOfSubstanceses)
         {
-            string code = _codeGenerator.Generate();
-            File.WriteAllText("test.cs",code);
-            throw new Exception();
-            return _codeGenerator.Generate();
+            _countOfCodeParts = countOfCodeParts;
+        }
+
+        public List<string> GenerateCode()
+        {
+            return _codeGenerator.GeneratingAtParts(_countOfCodeParts);
         }
 
         public void PrintGeneratedCode()
@@ -53,8 +58,8 @@ namespace ODEGenerator.CodeGenerator.CSharpCodeGenerator
 
         public void SolveODEs(string nameOfDirectory)
         {
-            _compiler.Compile(GenerateCode());
-            Console.WriteLine("Библиотека для решения системы оду создана");
+            _compiler.CompileParts(GenerateCode());
+            Console.WriteLine("Библиотека(и) для решения системы оду создана(ы)");
             OdeFunction odeFunction = _compiler.ODEsSolve;
             double[,] result = _odesSolver.Solve(odeFunction, GetInitialValues(), _timeArray);
 

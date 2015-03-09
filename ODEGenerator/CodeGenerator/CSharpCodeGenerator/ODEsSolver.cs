@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DotNumerics.ODE;
 
 namespace ODEGenerator.CodeGenerator.CSharpCodeGenerator
@@ -14,6 +15,7 @@ namespace ODEGenerator.CodeGenerator.CSharpCodeGenerator
 
         public double[,] Solve(OdeFunction odeFunction, double[] initialValues, double[] tauRange)
         {
+            Console.WriteLine("Решатель системы оду запущен");
             _odeRungeKutta.InitializeODEs(odeFunction, initialValues.Count());
             return _odeRungeKutta.Solve(initialValues,tauRange);
         }

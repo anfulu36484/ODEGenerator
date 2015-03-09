@@ -10,6 +10,8 @@ namespace ODEGenerator.SyntaxTree.Numerical
 
         private int odeId = -1;
 
+        private int groupId = -1;
+
         public Substance(string nameOfSubstance, double initialValue)
             : base(nameOfSubstance, initialValue)
         {
@@ -25,6 +27,12 @@ namespace ODEGenerator.SyntaxTree.Numerical
         {
             get { return odeId; }
             set { odeId = value; }
+        }
+
+        public int GroupID
+        {
+            get { return groupId; }
+            set { groupId = value; }
         }
 
         public GroupOfSubstances GroupOfSubstances
