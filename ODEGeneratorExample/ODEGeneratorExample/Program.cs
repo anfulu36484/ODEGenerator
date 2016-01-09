@@ -10,7 +10,7 @@ namespace ODEGeneratorExample
     {
         static void Main(string[] args)
         {
-            IExample example = new Example1();
+            IExample example = new Example0();
             example.RunTest();
             Console.Read();
         }
